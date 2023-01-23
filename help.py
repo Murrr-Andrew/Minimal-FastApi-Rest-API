@@ -15,5 +15,8 @@
 # pip3 install uvicorn
 # pip3 install pydantic
 
-# === Uvicorn ===================================
+# === UVICORN ===================================
 # uvicorn main:app --reload
+
+# === RESTART ===================================
+# sudo lsof -t -i tcp:8000 | xargs kill -9
