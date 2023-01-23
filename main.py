@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 import os
@@ -23,7 +23,7 @@ with open(os.path.join(os.getcwd(), 'people.json'), 'r') as f:
 
 
 @app.get('/person/{p_id}', status_code=200)
-def get_person(p_id: int):
+def person_get(p_id: int):
     """
     Method for getting person by ID
     """
@@ -32,7 +32,7 @@ def get_person(p_id: int):
 
 
 @app.get('/search', status_code=200)
-def search_person(age: Optional[int] = Query(None, title='Age', description='The age to filter for'),
+def person_search(age: Optional[int] = Query(None, title='Age', description='The age to filter for'),
                   name: Optional[str] = Query(None, title='Name', description='The name to filter for')):
     """
     Method for getting person(s) filtered by name/age params
@@ -43,7 +43,7 @@ def search_person(age: Optional[int] = Query(None, title='Age', description='The
 
 
 @app.post('/add', status_code=201)
-def add_person(person: Person):
+def person_add(person: Person):
     """
     Method to create a new person
     """
@@ -60,3 +60,29 @@ def add_person(person: Person):
         json.dump(people, f)
 
     return person
+
+
+@app.put('/update', status_code=201)
+def person_update(person: Person):
+    """
+    Method to update an existing person
+    """
+    new_person = {
+        'id': person.id,
+        'name': person.name,
+        'age': person.age,
+        'gender': person.gender
+    }
+
+    existing_person = [p for p in people if p['id'] == person.id]
+
+    if len(existing_person):
+        people.remove(existing_person[0])
+        people.append(new_person)
+
+        with open(os.path.join(os.getcwd(), 'people.json'), 'w') as f:
+            json.dump(people, f)
+
+        return person
+    else:
+        return HTTPException(status_code=404, detail=f'Person with id {person.id} does not exist!')
