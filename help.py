@@ -12,5 +12,8 @@
 
 # === FastApi ===================================
 # pip3 install fastapi
-# pip3 install unicorn
+# pip3 install uvicorn
 # pip3 install pydantic
+
+# === Uvicorn ===================================
+# uvicorn main:app --reload
