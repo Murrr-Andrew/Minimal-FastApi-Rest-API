@@ -62,7 +62,7 @@ def person_add(person: Person):
     return person
 
 
-@app.put('/update', status_code=201)
+@app.put('/update', status_code=204)
 def person_update(person: Person):
     """
     Method to update an existing person
@@ -86,3 +86,21 @@ def person_update(person: Person):
         return person
     else:
         return HTTPException(status_code=404, detail=f'Person with id {person.id} does not exist!')
+
+
+@app.delete('/delete/{p_id}', status_code=200)
+def person_delete(p_id: int):
+    """
+    Method to delete person by ID
+    """
+    person = [p for p in people if p['id'] == p_id]
+
+    if len(person):
+        people.remove(person[0])
+
+        with open(os.path.join(os.getcwd(), 'people.json'), 'w') as f:
+            json.dump(people, f)
+
+        return person
+    else:
+        return HTTPException(status_code=404, detail=f'Person with id {p_id} does not exist!')
